@@ -86,13 +86,6 @@ client.on('interactionCreate', async (interaction) => {
         if(err) console.log(err);
         else console.log(`Failed to execute slash command (${interaction.commandName}), no error provided`);
 
-        const channel = interaction.guild.channels.cache.get(process.env.GUILD_ID);
-        const guildDB = await Server.findOne({ server_id: interaction.guild.id });
-
-        if(guildDB.errors_enabled) {
-            channel.send(`⛔ Error in command ${interaction.commandName}`);
-        }
-
         interaction.channel.send('⛔ An error occured');
     }
 });
