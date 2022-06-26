@@ -13,6 +13,16 @@ const Discord = require('discord.js');
 // Moment
 const moment = require('moment');
 
+// Sticky Options
+module.exports.stickyOptions = {
+    channel: '',
+    content: '',
+    lastStickyMessage: null,
+    messagesBeforeResend: 0,
+    currMessages: 0,
+    enabled: false
+}
+
 // Create the client with the stupid fucking intents
 const client = new Discord.Client({
     intents: [
@@ -81,7 +91,7 @@ client.on('interactionCreate', async (interaction) => {
     });
 
     try {
-        await command.execute(interaction);
+        await command.execute(interaction, this.stickyOptions);
     } catch(err) {
         if(err) console.log(err);
         else console.log(`Failed to execute slash command (${interaction.commandName}), no error provided`);
@@ -93,6 +103,26 @@ client.on('interactionCreate', async (interaction) => {
 client.on('messageCreate', async (message) => {
     if(message.author.bot) return;
 
+    // -- STICKY -- //
+    if(
+        message.content != this.stickyOptions.content && 
+        this.stickyOptions.channel === message.channel.id && 
+        this.stickyOptions.enabled === true
+    ) {
+        this.stickyOptions.currMessages++;
+
+        if(this.stickyOptions.currMessages === this.stickyOptions.messagesBeforeResend) {
+            if(this.stickyOptions.lastStickyMessage) {
+                await this.stickyOptions.lastStickyMessage.delete();
+            }
+
+            this.stickyOptions.lastStickyMessage = await message.channel.send(this.stickyOptions.content);
+
+            this.stickyOptions.currMessages = 0;
+        }
+    }
+
+    // -- TRAINING SYSTEM -- //
     if(message.channel.id == '987359764986097685') {
         await message.guild.members.fetch();
 

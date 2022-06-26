@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, Permissions } = require('discord.js');
 
 module.exports = {
     data:
@@ -20,6 +20,15 @@ module.exports = {
                    .setRequired(true)
             ),
     execute: async (interaction) => {
+        if(!interaction.member.permissions.has(Permissions.FLAGS.EMBED_LINKS)) {
+            await interaction.reply({
+                content: '⛔ Sorry! You don\'t have the required permissions (`EMBED_LINKS`)',
+                ephemeral: true
+            });
+            
+            return;
+        }
+        
         const embed = new MessageEmbed()
                 .setColor('BLUE')
                 .setTitle(interaction.options.get('title').value)
