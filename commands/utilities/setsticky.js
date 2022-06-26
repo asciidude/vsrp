@@ -65,12 +65,12 @@ module.exports = {
             sticky.currMessages = 0;
             sticky.enabled = true;
     
-            interaction.reply({
+            await interaction.reply({
                 content: `Successfully set the sticky message to channel <#${channelID}>`,
                 ephemeral: true
             });
 
-            const msg = interaction.channel.send(body);
+            const msg = await interaction.channel.send(body);
             sticky.lastStickyMessage = msg;
         } else {
             sticky.channel = '';
